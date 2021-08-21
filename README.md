@@ -1,0 +1,2 @@
+# StFreeCAD
+Pharo-FreeCAD utility
