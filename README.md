@@ -1,9 +1,9 @@
 # StFreeCAD
 A package to create and edit parametric 3D models in FreeCAD from Pharo. This project is a part of GSoC 2021 https://summerofcode.withgoogle.com/dashboard/project/4824667119943680/overview/.
-FreeCAD is an Open Source 3D Parametric modeller written in C++ and Python, and has powerful CAD scripting abilities via its Python interpreter.
-StFreeCAD uses sockets to communicate with FreeCAD python interpreter. Commands are sent to it in the form of python strings generated using Python3Generator: https://github.com/juliendelplanque/Python3Generator.
-To know more about CAD scripting in FreeCAD, follow the link: https://wiki.freecadweb.org/FreeCAD_Scripting_Basics.
-FreeCAD wiki for Powerhub users https://wiki.freecadweb.org/Power_users_hub is a good place to understand the way 3D/2D objects are handled in FreeCAD.
+- FreeCAD is an Open Source 3D Parametric modeller written in C++ and Python, and has powerful CAD scripting abilities via its Python interpreter.
+- StFreeCAD uses sockets to communicate with FreeCAD python interpreter. Commands are sent to it in the form of python strings generated using Python3Generator: https://github.com/juliendelplanque/Python3Generator.
+- To know more about CAD scripting in FreeCAD, follow the link: https://wiki.freecadweb.org/FreeCAD_Scripting_Basics.
+- FreeCAD wiki for Powerhub users https://wiki.freecadweb.org/Power_users_hub is a good place to understand the way 3D/2D objects are handled in FreeCAD.
 
 ## Installation
 To run the package, you need to have FreeCAD installed on your computer. If not installed, download and install via the link: https://www.freecadweb.org/downloads.php .
