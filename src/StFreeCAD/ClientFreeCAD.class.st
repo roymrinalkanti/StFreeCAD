@@ -58,7 +58,7 @@ ClientFreeCAD >> activateWorkbench: aString [
 	| gui |
 	gui := 'Gui' asP3GIdentifier.
 	self
-		evaluate: (gui => #activateWorkbench callWith: {(aString , 'Workbench')}) generate
+		evaluate: (gui => #activateWorkbench callWith: {(aString , 'Workbench')})
 ]
 
 { #category : #ToDeprecate }
@@ -172,12 +172,12 @@ ClientFreeCAD >> differenceOn: anObject and: anotherObject [
 		addAll:
 			{(part
 				<- (activeDocument => #addObject callWith: {'Part::Cut' . 'cut'})).
-			(part => #Base <- activeDocument => anObject).
-			(part => #Tool <- activeDocument => anotherObject).
-			(activeDocument => #recompute call).
+			(part => #Base <- anObject).
+			(part => #Tool <- anotherObject).
+			((activeDocument => #recompute) call).
 			(gui => #SendMsgToActiveView callWith: {'ViewFit'})}.
 	self evaluate: instr.
-	^ (activeDocument => (self return: part => #Name)) asP3GIdentifier
+	^ ((activeDocument => (self return: part => #Name)) generate) asP3GIdentifier
 ]
 
 { #category : #'public access' }
@@ -198,7 +198,7 @@ for obj in FreeCAD.ActiveDocument.Objects:
 	list := OrderedCollection new.
 	received
 		regex: '\w+'
-		matchesDo: [ :word | list add: word asP3GIdentifier ].
+		matchesDo: [ :word | list add: ('FreeCAD.ActiveDocument.',word) asP3GIdentifier ].
 	^ list
 ]
 
@@ -367,12 +367,12 @@ ClientFreeCAD >> intersectionOn: anObject and: anotherObject [
 		addAll:
 			{(part
 				<- (activeDocument => #addObject callWith: {'Part::Common' . 'common'})).
-			(part => #Base <- activeDocument => anObject).
-			(part => #Tool <- activeDocument => anotherObject).
-			(activeDocument => #recompute call).
+			(part => #Base <- anObject ).
+			(part => #Tool <- anotherObject).
+			((activeDocument => #recompute) call).
 			(gui => #SendMsgToActiveView callWith: {'ViewFit'})}.
 	self evaluate: instr.
-	^ (activeDocument => (self return: part => #Name)) asP3GIdentifier
+	^ ((activeDocument => (self return: part => #Name)) generate) asP3GIdentifier
 ]
 
 { #category : #ToDeprecate }
@@ -503,10 +503,10 @@ ClientFreeCAD >> makeBoxL: length W: width H: height [
 			(part => #Length <- length).
 			(part => #Width <- width).
 			(part => #Height <- height).
-			(activeDocument => #recompute call).
+			((activeDocument => #recompute) call).
 			(gui => #SendMsgToActiveView callWith: {'ViewFit'})}.
 	self evaluate: instr.
-	^ (activeDocument => (self return: part => #Name)) asP3GIdentifier
+	^ ((activeDocument => (self return: part => #Name)) generate) asP3GIdentifier
 ]
 
 { #category : #Part }
@@ -519,11 +519,11 @@ ClientFreeCAD >> makeCone [
 	instr
 		addAll:
 			{(part
-				<- (activeDocument => #addObject callWith: {'Part::Cylinder' . 'cylinder'})).
-			(activeDocument => #recompute call).
+				<- (activeDocument => #addObject callWith: {'Part::Cone' . 'cone'})).
+			((activeDocument => #recompute) call).
 			(gui => #SendMsgToActiveView callWith: {'ViewFit'})}.
 	self evaluate: instr.
-	^ (activeDocument => (self return: part => #Name)) asP3GIdentifier
+	^ ((activeDocument => (self return: part => #Name)) generate) asP3GIdentifier
 ]
 
 { #category : #ToDeprecate }
@@ -573,7 +573,7 @@ ClientFreeCAD >> newDocument [
 	| doc freecad |
 	doc := 'doc' asP3GIdentifier.
 	freecad := 'FreeCAD' asP3GIdentifier.
-	self evaluate: doc <- (freecad => #newDocument call).
+	self evaluate: doc <- ((freecad => #newDocument) call).
 	^ doc
 ]
 
@@ -586,13 +586,15 @@ ClientFreeCAD >> openDocument: aString [
 	^doc
 ]
 
-{ #category : #initialization }
+{ #category : #Part }
 ClientFreeCAD >> position: position object: anObject [
+	"Use FreeCAD Vector to generate vectors for position"
+
 	| instr activeDocument |
 	instr := P3GInstructionsList new.
 	activeDocument := 'FreeCAD.ActiveDocument' asP3GIdentifier.
 	instr
-		addAll: {(activeDocument => anObject => #Placement => #Base <- position)}.
+		addAll: {(anObject => #Placement => #Base <- position)}.
 	self evaluate: instr
 ]
 
@@ -610,13 +612,13 @@ ClientFreeCAD >> return: aP3GAttributeReference [
 	^self retrieveValue: aP3GAttributeReference generate
 ]
 
-{ #category : #initialization }
+{ #category : #Part }
 ClientFreeCAD >> rotate: rotation object: anObject [
 	| instr activeDocument |
 	instr := P3GInstructionsList new.
 	activeDocument := 'FreeCAD.ActiveDocument' asP3GIdentifier.
 	instr
-		addAll: {(activeDocument => anObject => #Placement => #Rotation <- rotation )}.
+		addAll: {(anObject => #Placement => #Rotation <- rotation)}.
 	self evaluate: instr
 ]
 
@@ -647,7 +649,7 @@ ClientFreeCAD >> saveDocument [
 	| doc activeDocument |
 	doc := 'doc' asP3GIdentifier.
 	activeDocument := 'FreeCAD.ActiveDocument' asP3GIdentifier.
-	self evaluate: doc <- (activeDocument => #save call).
+	self evaluate: doc <- ((activeDocument => #save) call).
 	^ doc
 ]
 
@@ -664,12 +666,12 @@ ClientFreeCAD >> sectionOn: anObject and: anotherObject [
 		addAll:
 			{(part
 				<- (activeDocument => #addObject callWith: {'Part::Section' . 'section'})).
-			(part => #Base <- activeDocument => anObject).
-			(part => #Tool <- activeDocument => anotherObject).
-			(activeDocument => #recompute call).
+			(part => #Base <- anObject).
+			(part => #Tool <- anotherObject).
+			((activeDocument => #recompute) call).
 			(gui => #SendMsgToActiveView callWith: {'ViewFit'})}.
 	self evaluate: instr.
-	^ (activeDocument => (self return: part => #Name)) asP3GIdentifier
+	^ ((activeDocument => (self return: part => #Name)) generate) asP3GIdentifier
 ]
 
 { #category : #sending }
@@ -700,10 +702,10 @@ ClientFreeCAD >> unionOn: anObject and: anotherObject [
 		addAll:
 			{(part
 				<- (activeDocument => #addObject callWith: {'Part::Fuse' . 'fuse'})).
-			(part => #Base <- activeDocument => anObject).
-			(part => #Tool <- activeDocument => anotherObject).
-			(activeDocument => #recompute call).
+			(part => #Base <- anObject).
+			(part => #Tool <- anotherObject).
+			((activeDocument => #recompute) call).
 			(gui => #SendMsgToActiveView callWith: {'ViewFit'})}.
 	self evaluate: instr.
-	^ (activeDocument => (self return: part => #Name)) asP3GIdentifier
+	^ ((activeDocument => (self return: part => #Name)) generate) asP3GIdentifier
 ]
