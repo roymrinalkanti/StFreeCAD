@@ -13,7 +13,7 @@ BaselineOfStFreeCAD >> baseline: spec [
 			spec
 				package: 'StFreeCAD'
 					with: [ spec requires: #('NeoJSON' 'OSWinSubprocess' 'Python3Generator') ];
-				package: 'StFreeCAD-Objects';
+				package: 'StFreeCAD-Objects' with: [ spec requires: #('StFreeCAD') ];
 				baseline: 'NeoJSON'
 					with: [ spec repository: 'github://svenvc/NeoJSON/repository' ];
 				baseline: 'Python3Generator'
