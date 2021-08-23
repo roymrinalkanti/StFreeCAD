@@ -61,7 +61,7 @@ ClientFreeCAD >> activateWorkbench: aString [
 		evaluate: (gui => #activateWorkbench callWith: {(aString , 'Workbench')})
 ]
 
-{ #category : #ToDeprecate }
+{ #category : #deprecated }
 ClientFreeCAD >> booleanOperation: anOperation on: anObject and: anotherObject [
 	"Cut Common Section Fuse"
 
@@ -83,7 +83,7 @@ Gui.SendMsgToActiveView("ViewFit")'
 	^ self getObjectByLabel: (self retrieveValue: 'b.Label')
 ]
 
-{ #category : #ToDeprecate }
+{ #category : #deprecated }
 ClientFreeCAD >> createEdgesOf: anObject [
 	| list received |
 	self
@@ -102,7 +102,7 @@ for e in edges:
 	^ list
 ]
 
-{ #category : #ToDeprecate }
+{ #category : #deprecated }
 ClientFreeCAD >> createFacesOf: anObject [
 	| list received |
 	self
@@ -121,7 +121,7 @@ for f in faces:
 	^ list
 ]
 
-{ #category : #ToDeprecate }
+{ #category : #deprecated }
 ClientFreeCAD >> createVertexesOf: anObject [
 	| list received |
 	self
@@ -140,7 +140,7 @@ for v in vertexes:
 	^ list
 ]
 
-{ #category : #ToDeprecate }
+{ #category : #deprecated }
 ClientFreeCAD >> createWiresOf: anObject [
 	| list received |
 	self
@@ -202,7 +202,7 @@ for obj in FreeCAD.ActiveDocument.Objects:
 	^ list
 ]
 
-{ #category : #ToDeprecate }
+{ #category : #deprecated }
 ClientFreeCAD >> getObjectByLabel: aString [
 	| dictString |
 	self
@@ -222,7 +222,7 @@ for i in obj.PropertiesList:
 		next
 ]
 
-{ #category : #ToDeprecate }
+{ #category : #deprecated }
 ClientFreeCAD >> getSelectedObjects [
 	|list received|
 	self sendDataAndListen: 'a=[]
@@ -236,7 +236,7 @@ for selectionObj in selectionObjs:
 	^list
 ]
 
-{ #category : #ToDeprecate }
+{ #category : #deprecated }
 ClientFreeCAD >> getShape: aString number: anInteger ofObject: aDict [
 	| shape |
 	({'Edge' . 'Face' . 'Shell' . 'Solid' . 'Vertex' . 'Wire'}
@@ -270,7 +270,7 @@ ClientFreeCAD >> getShape: aString number: anInteger ofObject: aDict [
 	^ shape
 ]
 
-{ #category : #ToDeprecate }
+{ #category : #deprecated }
 ClientFreeCAD >> getShapeOfObject: aDict [
 	| nEdges nFaces nVertexes nWires shape list |
 	nEdges := (self
@@ -375,7 +375,7 @@ ClientFreeCAD >> intersectionOn: anObject and: anotherObject [
 	^ ((activeDocument => (self return: part => #Name)) generate) asP3GIdentifier
 ]
 
-{ #category : #ToDeprecate }
+{ #category : #deprecated }
 ClientFreeCAD >> makeBottle [
 	|makeBottle|
 	makeBottle:='import Part, math
@@ -415,7 +415,7 @@ Part.show(myBody)'.
 	self sendDataAndListen: makeBottle.
 ]
 
-{ #category : #ToDeprecate }
+{ #category : #deprecated }
 ClientFreeCAD >> makeBottle: anOrderedCollection [
 	|makeBottle|
 	makeBottle:='import Part, math
@@ -466,13 +466,13 @@ ClientFreeCAD >> makeBox [
 		addAll:
 			{(part
 				<- (activeDocument => #addObject callWith: {'Part::Box' . 'box'})).
-			(activeDocument => #recompute call).
+			((activeDocument => #recompute) call).
 			(gui => #SendMsgToActiveView callWith: {'ViewFit'})}.
 	self evaluate: instr.
-	^ (activeDocument => (self return: part => #Name)) asP3GIdentifier
+	^ ((activeDocument => (self return: part => #Name)) generate) asP3GIdentifier
 ]
 
-{ #category : #ToDeprecate }
+{ #category : #deprecated }
 ClientFreeCAD >> makeBox: aVector [
 	self
 		sendDataAndListen:
@@ -526,7 +526,7 @@ ClientFreeCAD >> makeCone [
 	^ ((activeDocument => (self return: part => #Name)) generate) asP3GIdentifier
 ]
 
-{ #category : #ToDeprecate }
+{ #category : #deprecated }
 ClientFreeCAD >> makeCone: anArray [
 	self
 		sendDataAndListen:
@@ -557,15 +557,15 @@ ClientFreeCAD >> makeConeR1: radius1 R2: radius2 H: height A: angle [
 			{(part
 				<-
 					(activeDocument => #addObject
-						callWith: {'Part::Cylinder' . 'cylinder'})).
+						callWith: {'Part::Cone' . 'cone'})).
 			(part => #Radius1 <- radius1).
 			(part => #Radius2 <- radius2).
 			(part => #Height <- height).
 			(part => #Angle <- angle).
-			(activeDocument => #recompute call).
+			((activeDocument => #recompute) call).
 			(gui => #SendMsgToActiveView callWith: {'ViewFit'})}.
 	self evaluate: instr.
-	^ (activeDocument => (self return: part => #Name)) asP3GIdentifier
+	^ ((activeDocument => (self return: part => #Name)) generate) asP3GIdentifier
 ]
 
 { #category : #opening }
@@ -582,8 +582,8 @@ ClientFreeCAD >> openDocument: aString [
 	| doc app |
 	doc := 'doc' asP3GIdentifier.
 	app := 'App' asP3GIdentifier.
-	self evaluate: doc <- (app => #open callWith: {aString}).
-	^doc
+	self evaluate: doc <- ((app => #open) callWith: {aString}).
+	^ doc
 ]
 
 { #category : #Part }
@@ -622,7 +622,7 @@ ClientFreeCAD >> rotate: rotation object: anObject [
 	self evaluate: instr
 ]
 
-{ #category : #ToDeprecate }
+{ #category : #deprecated }
 ClientFreeCAD >> rotationAxis: axis angle: angle object: anObject [
 	self
 		sendDataAndListen:
