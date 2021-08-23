@@ -6,5 +6,5 @@ Class {
 		'width',
 		'height'
 	],
-	#category : #StFreeCAD
+	#category : #'StFreeCAD-Objects'
 }

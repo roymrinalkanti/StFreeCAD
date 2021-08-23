@@ -1,5 +1,5 @@
 Class {
 	#name : #CompoundFreeCAD,
 	#superclass : #ShapeFreeCAD,
-	#category : #StFreeCAD
+	#category : #'StFreeCAD-Objects'
 }

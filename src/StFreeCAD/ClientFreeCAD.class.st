@@ -9,12 +9,59 @@ Class {
 	#category : #StFreeCAD
 }
 
-{ #category : #activating }
-ClientFreeCAD >> activateWorkbench: aString [
-	self sendDataAndListen: ('Gui.activateWorkbench("{1}Workbench")' format: { aString })
+{ #category : #examples }
+ClientFreeCAD class >> example2 [
+	'D:\FreeCAD 0.19\bin\FreeCAD.exe' startProgram
 ]
 
-{ #category : #Part }
+{ #category : #examples }
+ClientFreeCAD class >> example3 [
+	| client box cone face2 boxShape |
+	client := ClientFreeCAD new.
+	client
+		newDocument;
+		activateWorkbench: #Part.
+	client halt.
+	box := client makeBox: {12 . 13 . 14}.
+	cone := client makeCone.
+	face2 := client getShape: #Face number: 2 ofObject: box.
+	boxShape := client getShapeOfObject: box.
+	{#Cut . #Common . #Section . #Fuse}
+		do: [ :operation | client booleanOperation: operation on: box and: cone ].
+	client stop
+]
+
+{ #category : #examples }
+ClientFreeCAD class >> exampleParts [
+	| client box cone face2 boxShape |
+	client := ClientFreeCAD new.
+	client
+		newDocument;
+		activateWorkbench: #Part.
+	client halt.
+	box := client makeBox: {12 . 13 . 14}.
+	cone := client makeCone.
+	face2 := client getShape: #Face number: 2 ofObject: box.
+	boxShape := client getShapeOfObject: box.
+	{#Cut . #Common . #Section . #Fuse}
+		do: [ :operation | client booleanOperation: operation on: box and: cone ].
+	client stop
+]
+
+{ #category : #examples }
+ClientFreeCAD class >> exampleStartProgram [
+	'D:\FreeCAD 0.19\bin\FreeCAD.exe' startProgram
+]
+
+{ #category : #activating }
+ClientFreeCAD >> activateWorkbench: aString [
+	| gui |
+	gui := 'Gui' asP3GIdentifier.
+	self
+		evaluate: (gui => #activateWorkbench callWith: {(aString , 'Workbench')}) generate
+]
+
+{ #category : #ToDeprecate }
 ClientFreeCAD >> booleanOperation: anOperation on: anObject and: anotherObject [
 	"Cut Common Section Fuse"
 
@@ -36,60 +83,126 @@ Gui.SendMsgToActiveView("ViewFit")'
 	^ self getObjectByLabel: (self retrieveValue: 'b.Label')
 ]
 
-{ #category : #accesing }
-ClientFreeCAD >> edgesOf: aString [
-	|list received|
-	self sendDataAndListen: ('a=[]
+{ #category : #ToDeprecate }
+ClientFreeCAD >> createEdgesOf: anObject [
+	| list received |
+	self
+		sendDataAndListen:
+			('a=[]
 obj =FreeCAD.ActiveDocument.getObjectsByLabel("{1}")[0]
 edges=obj.Shape.Edges
 for e in edges:
 	edge=FreeCAD.ActiveDocument.addObject("Part::Feature","edge")
 	edge.Shape=e
 	a.append(edge.Label)
-' format: {aString}).
+' format: {anObject at: #Label}).
 	received := self retrieveValue: 'a'.
 	list := OrderedCollection new.
-	received regex: '\w+' matchesDo: [ :word| list add: word ].
-	^list
+	received regex: '\w+' matchesDo: [ :word | list add: word ].
+	^ list
 ]
 
-{ #category : #'public access' }
-ClientFreeCAD >> evaluate: aString [
-	self sendDataAndListen: aString.
-	
-]
-
-{ #category : #accesing }
-ClientFreeCAD >> facesOf: aString [
-	|list received|
-	self sendDataAndListen: ('a=[]
+{ #category : #ToDeprecate }
+ClientFreeCAD >> createFacesOf: anObject [
+	| list received |
+	self
+		sendDataAndListen:
+			('a=[]
 obj =FreeCAD.ActiveDocument.getObjectsByLabel("{1}")[0]
 faces=obj.Shape.Faces
 for f in faces:
 	face=FreeCAD.ActiveDocument.addObject("Part::Feature","face")
 	face.Shape=f
 	a.append(face.Label)
-' format: {aString}).
+' format: {anObject at: #Label}).
 	received := self retrieveValue: 'a'.
 	list := OrderedCollection new.
-	received regex: '\w+' matchesDo: [ :word| list add: word ].
-	^list
+	received regex: '\w+' matchesDo: [ :word | list add: word ].
+	^ list
+]
+
+{ #category : #ToDeprecate }
+ClientFreeCAD >> createVertexesOf: anObject [
+	| list received |
+	self
+		sendDataAndListen:
+			('a=[]
+obj =FreeCAD.ActiveDocument.getObjectsByLabel("{1}")[0]
+vertexes=obj.Shape.Vertexes
+for v in vertexes:
+	vertex=FreeCAD.ActiveDocument.addObject("Part::Vertex","vertex")
+	vertex.Shape=v
+	a.append(vertex.Label)
+' format: {anObject at: #Label}).
+	received := self retrieveValue: 'a'.
+	list := OrderedCollection new.
+	received regex: '\w+' matchesDo: [ :word | list add: word ].
+	^ list
+]
+
+{ #category : #ToDeprecate }
+ClientFreeCAD >> createWiresOf: anObject [
+	| list received |
+	self
+		sendDataAndListen:
+			('a=[]
+obj =FreeCAD.ActiveDocument.getObjectsByLabel("{1}")[0]
+wires=obj.Shape.Wires
+for w in wires:
+	wire=FreeCAD.ActiveDocument.addObject("Part::Feature","wire")
+	wire.Shape=w
+	a.append(wire.Label)
+' format: {anObject at: #label}).
+	received := self retrieveValue: 'a'.
+	list := OrderedCollection new.
+	received regex: '\w+' matchesDo: [ :word | list add: word ].
+	^ list
+]
+
+{ #category : #Part }
+ClientFreeCAD >> differenceOn: anObject and: anotherObject [
+	"Cut Common Section Fuse"
+
+	| instr activeDocument gui part |
+	instr := P3GInstructionsList new.
+	activeDocument := 'FreeCAD.ActiveDocument' asP3GIdentifier.
+	part := 'part' asP3GIdentifier.
+	gui := 'Gui' asP3GIdentifier.
+	instr
+		addAll:
+			{(part
+				<- (activeDocument => #addObject callWith: {'Part::Cut' . 'cut'})).
+			(part => #Base <- activeDocument => anObject).
+			(part => #Tool <- activeDocument => anotherObject).
+			(activeDocument => #recompute call).
+			(gui => #SendMsgToActiveView callWith: {'ViewFit'})}.
+	self evaluate: instr.
+	^ (activeDocument => (self return: part => #Name)) asP3GIdentifier
+]
+
+{ #category : #'public access' }
+ClientFreeCAD >> evaluate: anInstructionList [
+	self sendDataAndListen: anInstructionList generate.
 ]
 
 { #category : #accessing }
 ClientFreeCAD >> getAllObjects [
-	|list received|
-	self sendDataAndListen: 'a=[]
+	| list received |
+	self
+		sendDataAndListen:
+			'a=[]
 for obj in FreeCAD.ActiveDocument.Objects:
-	a.append(obj.Label)
+	a.append(obj.Name)
 '.
 	received := self retrieveValue: 'a'.
 	list := OrderedCollection new.
-	received regex: '\w+' matchesDo: [ :word| list add: word ].
-	^list
+	received
+		regex: '\w+'
+		matchesDo: [ :word | list add: word asP3GIdentifier ].
+	^ list
 ]
 
-{ #category : #accessing }
+{ #category : #ToDeprecate }
 ClientFreeCAD >> getObjectByLabel: aString [
 	| dictString |
 	self
@@ -109,7 +222,7 @@ for i in obj.PropertiesList:
 		next
 ]
 
-{ #category : #accessing }
+{ #category : #ToDeprecate }
 ClientFreeCAD >> getSelectedObjects [
 	|list received|
 	self sendDataAndListen: 'a=[]
@@ -123,7 +236,7 @@ for selectionObj in selectionObjs:
 	^list
 ]
 
-{ #category : #accessing }
+{ #category : #ToDeprecate }
 ClientFreeCAD >> getShape: aString number: anInteger ofObject: aDict [
 	| shape |
 	({'Edge' . 'Face' . 'Shell' . 'Solid' . 'Vertex' . 'Wire'}
@@ -157,7 +270,7 @@ ClientFreeCAD >> getShape: aString number: anInteger ofObject: aDict [
 	^ shape
 ]
 
-{ #category : #accessing }
+{ #category : #ToDeprecate }
 ClientFreeCAD >> getShapeOfObject: aDict [
 	| nEdges nFaces nVertexes nWires shape list |
 	nEdges := (self
@@ -225,12 +338,8 @@ ClientFreeCAD >> initialize [
 	self
 		sendDataAndListen:
 			'import socket
-
-ip = "127.0.0.1"
-port = 65432
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-sock.connect((ip, port))
-
+sock.connect(("127.0.0.1", 65432))
 def returnValue(a):
 	sock.sendall(a)
 
@@ -239,9 +348,34 @@ def closeSocket():
 	sock.close()
 
 '.
+	{(#ActiveDocument -> 'FreeCAD.ActiveDocument').
+	(#Gui -> 'Gui')}
+		do:
+			[ :each | Smalltalk globals at: each key put: each value asP3GIdentifier ]
 ]
 
 { #category : #Part }
+ClientFreeCAD >> intersectionOn: anObject and: anotherObject [
+	"Cut Common Section Fuse"
+
+	| instr activeDocument gui part |
+	instr := P3GInstructionsList new.
+	activeDocument := 'FreeCAD.ActiveDocument' asP3GIdentifier.
+	part := 'part' asP3GIdentifier.
+	gui := 'Gui' asP3GIdentifier.
+	instr
+		addAll:
+			{(part
+				<- (activeDocument => #addObject callWith: {'Part::Common' . 'common'})).
+			(part => #Base <- activeDocument => anObject).
+			(part => #Tool <- activeDocument => anotherObject).
+			(activeDocument => #recompute call).
+			(gui => #SendMsgToActiveView callWith: {'ViewFit'})}.
+	self evaluate: instr.
+	^ (activeDocument => (self return: part => #Name)) asP3GIdentifier
+]
+
+{ #category : #ToDeprecate }
 ClientFreeCAD >> makeBottle [
 	|makeBottle|
 	makeBottle:='import Part, math
@@ -281,7 +415,7 @@ Part.show(myBody)'.
 	self sendDataAndListen: makeBottle.
 ]
 
-{ #category : #Part }
+{ #category : #ToDeprecate }
 ClientFreeCAD >> makeBottle: anOrderedCollection [
 	|makeBottle|
 	makeBottle:='import Part, math
@@ -323,15 +457,22 @@ Part.show(myBody)' format: { anOrderedCollection at: 1. anOrderedCollection at: 
 
 { #category : #Part }
 ClientFreeCAD >> makeBox [
-	self
-		sendDataAndListen:
-			'b = FreeCAD.ActiveDocument.addObject("Part::Box","box")
-FreeCAD.ActiveDocument.recompute()
-Gui.SendMsgToActiveView("ViewFit")'.
-	^ self getObjectByLabel: (self retrieveValue: 'b.Label')
+	| instr activeDocument gui part |
+	instr := P3GInstructionsList new.
+	activeDocument := 'FreeCAD.ActiveDocument' asP3GIdentifier.
+	part := 'part' asP3GIdentifier.
+	gui := 'Gui' asP3GIdentifier.
+	instr
+		addAll:
+			{(part
+				<- (activeDocument => #addObject callWith: {'Part::Box' . 'box'})).
+			(activeDocument => #recompute call).
+			(gui => #SendMsgToActiveView callWith: {'ViewFit'})}.
+	self evaluate: instr.
+	^ (activeDocument => (self return: part => #Name)) asP3GIdentifier
 ]
 
-{ #category : #Part }
+{ #category : #ToDeprecate }
 ClientFreeCAD >> makeBox: aVector [
 	self
 		sendDataAndListen:
@@ -349,16 +490,43 @@ Gui.SendMsgToActiveView("ViewFit")'
 ]
 
 { #category : #Part }
-ClientFreeCAD >> makeCone [
-	self
-		sendDataAndListen:
-			'c = FreeCAD.ActiveDocument.addObject("Part::Cone","cone")
-FreeCAD.ActiveDocument.recompute()
-Gui.SendMsgToActiveView("ViewFit")'.
-	^ self getObjectByLabel: (self retrieveValue: 'c.Label')
+ClientFreeCAD >> makeBoxL: length W: width H: height [
+	| instr activeDocument gui part |
+	instr := P3GInstructionsList new.
+	activeDocument := 'FreeCAD.ActiveDocument' asP3GIdentifier.
+	part := 'part' asP3GIdentifier.
+	gui := 'Gui' asP3GIdentifier.
+	instr
+		addAll:
+			{(part
+				<- (activeDocument => #addObject callWith: {'Part::Box' . 'box'})).
+			(part => #Length <- length).
+			(part => #Width <- width).
+			(part => #Height <- height).
+			(activeDocument => #recompute call).
+			(gui => #SendMsgToActiveView callWith: {'ViewFit'})}.
+	self evaluate: instr.
+	^ (activeDocument => (self return: part => #Name)) asP3GIdentifier
 ]
 
 { #category : #Part }
+ClientFreeCAD >> makeCone [
+	| instr activeDocument gui part |
+	instr := P3GInstructionsList new.
+	activeDocument := 'FreeCAD.ActiveDocument' asP3GIdentifier.
+	part := 'part' asP3GIdentifier.
+	gui := 'Gui' asP3GIdentifier.
+	instr
+		addAll:
+			{(part
+				<- (activeDocument => #addObject callWith: {'Part::Cylinder' . 'cylinder'})).
+			(activeDocument => #recompute call).
+			(gui => #SendMsgToActiveView callWith: {'ViewFit'})}.
+	self evaluate: instr.
+	^ (activeDocument => (self return: part => #Name)) asP3GIdentifier
+]
+
+{ #category : #ToDeprecate }
 ClientFreeCAD >> makeCone: anArray [
 	self
 		sendDataAndListen:
@@ -377,14 +545,55 @@ Gui.SendMsgToActiveView("ViewFit")'
 	^ self getObjectByLabel: (self retrieveValue: 'b.Label')
 ]
 
+{ #category : #Part }
+ClientFreeCAD >> makeConeR1: radius1 R2: radius2 H: height A: angle [
+	| instr activeDocument gui part |
+	instr := P3GInstructionsList new.
+	activeDocument := 'FreeCAD.ActiveDocument' asP3GIdentifier.
+	part := 'part' asP3GIdentifier.
+	gui := 'Gui' asP3GIdentifier.
+	instr
+		addAll:
+			{(part
+				<-
+					(activeDocument => #addObject
+						callWith: {'Part::Cylinder' . 'cylinder'})).
+			(part => #Radius1 <- radius1).
+			(part => #Radius2 <- radius2).
+			(part => #Height <- height).
+			(part => #Angle <- angle).
+			(activeDocument => #recompute call).
+			(gui => #SendMsgToActiveView callWith: {'ViewFit'})}.
+	self evaluate: instr.
+	^ (activeDocument => (self return: part => #Name)) asP3GIdentifier
+]
+
 { #category : #opening }
 ClientFreeCAD >> newDocument [
-	self sendDataAndListen: 'doc= FreeCAD.newDocument()'
+	| doc freecad |
+	doc := 'doc' asP3GIdentifier.
+	freecad := 'FreeCAD' asP3GIdentifier.
+	self evaluate: doc <- (freecad => #newDocument call).
+	^ doc
 ]
 
 { #category : #'instance creation' }
-ClientFreeCAD >> openDocument: aString [ 
-	self sendDataAndListen: ('doc= FreeCAD.open("{1}")' format: { aString })
+ClientFreeCAD >> openDocument: aString [
+	| doc app |
+	doc := 'doc' asP3GIdentifier.
+	app := 'App' asP3GIdentifier.
+	self evaluate: doc <- (app => #open callWith: {aString}).
+	^doc
+]
+
+{ #category : #initialization }
+ClientFreeCAD >> position: position object: anObject [
+	| instr activeDocument |
+	instr := P3GInstructionsList new.
+	activeDocument := 'FreeCAD.ActiveDocument' asP3GIdentifier.
+	instr
+		addAll: {(activeDocument => anObject => #Placement => #Base <- position)}.
+	self evaluate: instr
 ]
 
 { #category : #receiving }
@@ -396,17 +605,71 @@ ClientFreeCAD >> retrieveValue: aString [
 	^receivedData .
 ]
 
+{ #category : #accessing }
+ClientFreeCAD >> return: aP3GAttributeReference [
+	^self retrieveValue: aP3GAttributeReference generate
+]
+
+{ #category : #initialization }
+ClientFreeCAD >> rotate: rotation object: anObject [
+	| instr activeDocument |
+	instr := P3GInstructionsList new.
+	activeDocument := 'FreeCAD.ActiveDocument' asP3GIdentifier.
+	instr
+		addAll: {(activeDocument => anObject => #Placement => #Rotation <- rotation )}.
+	self evaluate: instr
+]
+
+{ #category : #ToDeprecate }
+ClientFreeCAD >> rotationAxis: axis angle: angle object: anObject [
+	self
+		sendDataAndListen:
+			('position=FreeCAD.ActiveDocument.getObjectsByLabel("{1}")[0].Placement.Base
+FreeCAD.ActiveDocument.getObjectsByLabel("{1}")[0].Placement = App.Placement(position,App.Vector({2},{3},{4}),{5})'
+				format:
+					{(anObject at: #Label).
+					(axis at: 1).
+					(axis at: 2).
+					(axis at: 3). angle})
+]
+
 { #category : #'instance creation' }
 ClientFreeCAD >> saveAsDocument: aString [
-	self
-		sendDataAndListen: ('doc= FreeCAD.saveAs("{1}")' format: {aString})
+	| doc activeDocument |
+	doc := 'doc' asP3GIdentifier.
+	activeDocument := 'FreeCAD.ActiveDocument' asP3GIdentifier.
+	self evaluate: doc <- (activeDocument => #saveAs callWith: {aString}).
+	^doc
 ]
 
 { #category : #saving }
 ClientFreeCAD >> saveDocument [
-	self
-		sendDataAndListen: ('doc=FreeCAD.ActiveDocument
-doc.save()')
+	| doc activeDocument |
+	doc := 'doc' asP3GIdentifier.
+	activeDocument := 'FreeCAD.ActiveDocument' asP3GIdentifier.
+	self evaluate: doc <- (activeDocument => #save call).
+	^ doc
+]
+
+{ #category : #Part }
+ClientFreeCAD >> sectionOn: anObject and: anotherObject [
+	"Cut Common Section Fuse"
+
+	| instr activeDocument gui part |
+	instr := P3GInstructionsList new.
+	activeDocument := 'FreeCAD.ActiveDocument' asP3GIdentifier.
+	part := 'part' asP3GIdentifier.
+	gui := 'Gui' asP3GIdentifier.
+	instr
+		addAll:
+			{(part
+				<- (activeDocument => #addObject callWith: {'Part::Section' . 'section'})).
+			(part => #Base <- activeDocument => anObject).
+			(part => #Tool <- activeDocument => anotherObject).
+			(activeDocument => #recompute call).
+			(gui => #SendMsgToActiveView callWith: {'ViewFit'})}.
+	self evaluate: instr.
+	^ (activeDocument => (self return: part => #Name)) asP3GIdentifier
 ]
 
 { #category : #sending }
@@ -424,36 +687,23 @@ ClientFreeCAD >> stop [
 	server stop.
 ]
 
-{ #category : #accesing }
-ClientFreeCAD >> vertexesOf: aString [
-	|list received|
-	self sendDataAndListen: ('a=[]
-obj =FreeCAD.ActiveDocument.getObjectsByLabel("{1}")[0]
-vertexes=obj.Shape.Vertexes
-for v in vertexes:
-	vertex=FreeCAD.ActiveDocument.addObject("Part::Vertex","vertex")
-	vertex.Shape=v
-	a.append(vertex.Label)
-' format: {aString}).
-	received := self retrieveValue: 'a'.
-	list := OrderedCollection new.
-	received regex: '\w+' matchesDo: [ :word| list add: word ].
-	^list
-]
+{ #category : #Part }
+ClientFreeCAD >> unionOn: anObject and: anotherObject [
+	"Cut Common Section Fuse"
 
-{ #category : #accesing }
-ClientFreeCAD >> wiresOf: aString [
-	|list received|
-	self sendDataAndListen: ('a=[]
-obj =FreeCAD.ActiveDocument.getObjectsByLabel("{1}")[0]
-wires=obj.Shape.Wires
-for w in wires:
-	wire=FreeCAD.ActiveDocument.addObject("Part::Feature","wire")
-	wire.Shape=w
-	a.append(wire.Label)
-' format: {aString}).
-	received := self retrieveValue: 'a'.
-	list := OrderedCollection new.
-	received regex: '\w+' matchesDo: [ :word| list add: word ].
-	^list
+	| instr activeDocument gui part |
+	instr := P3GInstructionsList new.
+	activeDocument := 'FreeCAD.ActiveDocument' asP3GIdentifier.
+	part := 'part' asP3GIdentifier.
+	gui := 'Gui' asP3GIdentifier.
+	instr
+		addAll:
+			{(part
+				<- (activeDocument => #addObject callWith: {'Part::Fuse' . 'fuse'})).
+			(part => #Base <- activeDocument => anObject).
+			(part => #Tool <- activeDocument => anotherObject).
+			(activeDocument => #recompute call).
+			(gui => #SendMsgToActiveView callWith: {'ViewFit'})}.
+	self evaluate: instr.
+	^ (activeDocument => (self return: part => #Name)) asP3GIdentifier
 ]

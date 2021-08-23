@@ -13,5 +13,10 @@ Class {
 		'tolerance',
 		'wire'
 	],
-	#category : #StFreeCAD
+	#category : #'StFreeCAD-Objects'
 }
+
+{ #category : #accessing }
+FaceFreeCAD >> surface [ 
+	^surface
+]

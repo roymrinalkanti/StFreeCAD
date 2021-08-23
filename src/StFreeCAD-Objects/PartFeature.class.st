@@ -9,5 +9,5 @@ Class {
 		'visibility',
 		'properties'
 	],
-	#category : #StFreeCAD
+	#category : #'StFreeCAD-Objects'
 }

@@ -17,5 +17,5 @@ Class {
 		'staticMoments',
 		'tolerance'
 	],
-	#category : #StFreeCAD
+	#category : #'StFreeCAD-Objects'
 }

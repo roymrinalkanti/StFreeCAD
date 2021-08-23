@@ -16,5 +16,10 @@ Class {
 		'volume',
 		'wires'
 	],
-	#category : #StFreeCAD
+	#category : #'StFreeCAD-Objects'
 }
+
+{ #category : #accessing }
+ShapeFreeCAD >> faces [
+	^faces
+]

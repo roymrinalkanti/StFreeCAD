@@ -12,5 +12,5 @@ Class {
 		'principalProperties',
 		'staticMoments'
 	],
-	#category : #StFreeCAD
+	#category : #'StFreeCAD-Objects'
 }

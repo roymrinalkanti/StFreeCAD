@@ -8,5 +8,5 @@ Class {
 		'y',
 		'z'
 	],
-	#category : #StFreeCAD
+	#category : #'StFreeCAD-Objects'
 }

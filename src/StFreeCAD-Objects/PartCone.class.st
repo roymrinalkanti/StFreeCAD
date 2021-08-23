@@ -7,5 +7,5 @@ Class {
 		'radius1',
 		'radius2'
 	],
-	#category : #StFreeCAD
+	#category : #'StFreeCAD-Objects'
 }

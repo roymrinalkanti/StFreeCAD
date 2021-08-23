@@ -7,10 +7,5 @@ Class {
 		'placement',
 		'tag'
 	],
-	#category : #StFreeCAD
+	#category : #'StFreeCAD-Objects'
 }
-
-{ #category : #'as yet unclassified' }
-ComplexGeoData >> aTest [
-	^ self asString
-]
