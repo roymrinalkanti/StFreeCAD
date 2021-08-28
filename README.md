@@ -5,18 +5,26 @@ A package to create and edit parametric 3D models in FreeCAD from Pharo. This pr
 - To know more about CAD scripting in FreeCAD, follow the link: https://wiki.freecadweb.org/FreeCAD_Scripting_Basics.
 - FreeCAD wiki for Powerhub users https://wiki.freecadweb.org/Power_users_hub is a good place to understand the way 3D/2D objects are handled in FreeCAD.
 
+## Features currently implemented/not implemented
+- [x] Basic Part creation (Box, Cylinder)
+- [x] Changing placement of created objects in FreeCAD
+- [x] Querying the properties of objects created in FreeCAD
+- [ ] Storing FreeCAD Part objects in Pharo
+- [ ] Mimicing FreeCAD class hierarchy in Pharo
+
 ## Installation
 To run the package, you need to have FreeCAD installed on your computer. If not installed, download and install via the link: https://www.freecadweb.org/downloads.php .
 ### FreeCAD side
 Once FreeCAD is installed, you need to install the external workbench given in this repository to your FreeCAD. To proceed, download the repository and extract the folder named **StFreeCADSide** on your local hard disk.
 Further instructions vary for different Operating Systems. The following link describes the installation https://wiki.freecadweb.org/How_to_install_additional_workbenches. Follow *Manual Installation* steps for your appropriate OS.
 
+
 #### For Windows:
 - Within FreeCAD, locate the macro path by choosing Edit → Preferences → General → Macro and look for the ”Macro path”
-- Supposed your Windows-Login is “username” the default macro path is %APPDATA%\FreeCAD\ which is usually C:\Users\username\Appdata\Roaming\FreeCAD
-- Within the macro-directory create (if not already present) a folder called “Mod”
-- Within the Mod folder, create a folder with the name of the workbench, for example “Curves”
-- Now move the unpacked files and sub-folders of the workbench to the just created workbench-folder.
+- The default macro path is usually in *C:\Users\username\Appdata\Roaming\FreeCAD*.
+- Within the macro-directory create (if not already present) a folder called **Mod**.
+- Within the **Mod** folder, place the **StFreeCADSide** folder extracted from the repository.
+
 ### Pharo side
 To install this project in your Pharo image, open a playground and *DoIt* the following code snippet:
 ```
@@ -58,15 +66,20 @@ ClientFreeCAD>>evaluate: aP3Generable
 executes *aP3Generable* instructions.
 
 ```
-ClientFreeCAD>>evaluate: aP3Generable
+ClientFreeCAD>>return: aP3Generable
 ```
-executes *aP3Generable* instructions.
+Returns the value of *aP3Generable* command.
 
 More methods are explained briefly in the example below.
 
 ## Example
 ```
+"Before connecting make sure that FreeCAD is running. You can start FreeCAD by double-clicking the FreeCAD shortcut.
+Alternatively, you can start FreeCAD by noting down the FreeCAD.exe location and running the following command:"
+'D:\FreeCAD 0.19\bin\FreeCAD.exe' startProgram. "Replace the string to the location of FreeCAD.exe in your computer"
+
 client := ClientFreeCAD new.
+"Establishes communication between FreeCAD and Pharo"
 
 client newDocument; activateWorkbench: #Part.
 "Creates a new Document; activates the Part-Workbench (used to create 3D objects)"
@@ -120,3 +133,7 @@ client openDocument: 'D:/test.FCStd'.
 
 client stop.
 ```
+## Troubleshooting
+
+
+## Known Bugs and Issues
