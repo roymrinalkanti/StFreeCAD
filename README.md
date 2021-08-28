@@ -13,7 +13,8 @@ A package to create and edit parametric 3D models in FreeCAD from Pharo. This pr
 - [ ] Mimicing FreeCAD class hierarchy in Pharo
 
 ## Installation
-To run the package, you need to have FreeCAD installed on your computer. If not installed, download and install via the link: https://www.freecadweb.org/downloads.php .
+To run the package, you need to have FreeCAD installed on your computer. If not installed, download and install via the link: https://www.freecadweb.org/downloads.php.
+
 ### FreeCAD side
 Once FreeCAD is installed, you need to install the external workbench given in this repository to your FreeCAD. To proceed, download the repository and extract the folder named **StFreeCADSide** on your local hard disk.
 Further instructions vary for different Operating Systems. The following link describes the installation https://wiki.freecadweb.org/How_to_install_additional_workbenches. Follow *Manual Installation* steps for your appropriate OS.
@@ -76,7 +77,8 @@ More methods are explained briefly in the example below.
 ```
 "Before connecting make sure that FreeCAD is running. You can start FreeCAD by double-clicking the FreeCAD shortcut.
 Alternatively, you can start FreeCAD by noting down the FreeCAD.exe location and running the following command:"
-'D:\FreeCAD 0.19\bin\FreeCAD.exe' startProgram. "Replace the string to the location of FreeCAD.exe in your computer"
+'D:\FreeCAD 0.19\bin\FreeCAD.exe' startProgram.
+"Replace the string to the location of FreeCAD.exe in your computer"
 
 client := ClientFreeCAD new.
 "Establishes communication between FreeCAD and Pharo"
@@ -134,6 +136,18 @@ client openDocument: 'D:/test.FCStd'.
 client stop.
 ```
 ## Troubleshooting
-
+- If a socket connection error arises while running StFreeCAD, certain functions that involve returning information from FreeCAD might give an *Receieve Timeout* error.
+In such a case, execute *close* message like so:
+```
+client close.
+```
+Then open the Process Browser in Pharo (On Pharo 8, it is in System -> Process Browser). Tereminate any socket-related processes. They are usually preceeded by numbers.
+Now restart FreeCAD, and connect to it by executing the following command:
+```
+client := ClientFreeCAD new.
+```
 
 ## Known Bugs and Issues
+- Socket communication is not established sometimes between FreeCAD and Pharo. See **Troubleshooting** for more details.
+- Older methods (marked with 'Deprecated' protocol) do not return expected returns.
+- **StFreeCAD-Objects** is a package that is not implemented yet. It will be implemented in further revisions of package.
