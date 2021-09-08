@@ -101,7 +101,7 @@ position:=FreeCAD vectorX: 3 Y: 4 Z: 5.
 "Creates a Vector with x-y-z values. Used to define position of an object, and change it"
 
 client position: position object: box.
-"Positions the object provided (*box*) to the given position vector (*position*)
+"Positions the object provided (*box*) to the given position vector (*position*)"
 
 rotation := FreeCAD rotationAxis: position angle: 45.
 "Defines a rotation along an axis vector by an angle."
