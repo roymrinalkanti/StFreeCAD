@@ -1,3 +1,8 @@
+"
+I am responsible for communication with FreeCAD.
+On Creation, I connect into FreeCAD's server to send messages, and create a server to receive values from FreeCAD.
+I contain methods to create/edit/query part objs.
+"
 Class {
 	#name : #ClientFreeCAD,
 	#superclass : #Object,
@@ -180,7 +185,7 @@ ClientFreeCAD >> differenceOn: anObject and: anotherObject [
 	^ ((activeDocument => (self return: part => #Name)) generate) asP3GIdentifier
 ]
 
-{ #category : #'public access' }
+{ #category : #sending }
 ClientFreeCAD >> evaluate: anInstructionList [
 	self sendDataAndListen: anInstructionList generate.
 ]
@@ -348,10 +353,7 @@ def closeSocket():
 	sock.close()
 
 '.
-	{(#ActiveDocument -> 'FreeCAD.ActiveDocument').
-	(#Gui -> 'Gui')}
-		do:
-			[ :each | Smalltalk globals at: each key put: each value asP3GIdentifier ]
+
 ]
 
 { #category : #Part }
@@ -566,6 +568,252 @@ ClientFreeCAD >> makeConeR1: radius1 R2: radius2 H: height A: angle [
 			(gui => #SendMsgToActiveView callWith: {'ViewFit'})}.
 	self evaluate: instr.
 	^ ((activeDocument => (self return: part => #Name)) generate) asP3GIdentifier
+]
+
+{ #category : #Part }
+ClientFreeCAD >> makeCylinder [
+	| instr activeDocument gui part |
+	instr := P3GInstructionsList new.
+	activeDocument := 'FreeCAD.ActiveDocument' asP3GIdentifier.
+	part := 'part' asP3GIdentifier.
+	gui := 'Gui' asP3GIdentifier.
+	instr
+		addAll:
+			{(part
+				<-
+					(activeDocument => #addObject
+						callWith: {'Part::Cylinder' . 'cylinder'})).
+			(activeDocument => #recompute) call.
+			(gui => #SendMsgToActiveView callWith: {'ViewFit'})}.
+	self evaluate: instr.
+	^ (activeDocument => (self return: part => #Name)) generate
+		asP3GIdentifier
+]
+
+{ #category : #Part }
+ClientFreeCAD >> makeCylinderR: radius H: height A: angle [
+	| instr activeDocument gui part |
+	instr := P3GInstructionsList new.
+	activeDocument := 'FreeCAD.ActiveDocument' asP3GIdentifier.
+	part := 'part' asP3GIdentifier.
+	gui := 'Gui' asP3GIdentifier.
+	instr
+		addAll:
+			{(part
+				<- (activeDocument => #addObject callWith: {'Part::Cylinder' . 'cylinder'})).
+			(part => #Radius <- radius ).
+			(part => #Angle <- angle).
+			(part => #Height <- height).
+			(activeDocument => #recompute) call.
+			(gui => #SendMsgToActiveView callWith: {'ViewFit'})}.
+	self evaluate: instr.
+	^ (activeDocument => (self return: part => #Name)) generate
+		asP3GIdentifier
+]
+
+{ #category : #Part }
+ClientFreeCAD >> makeEllipsoidR1: radius1 R2: radius2 R3: radius3 [
+	| instr activeDocument gui part |
+	instr := P3GInstructionsList new.
+	activeDocument := 'FreeCAD.ActiveDocument' asP3GIdentifier.
+	part := 'part' asP3GIdentifier.
+	gui := 'Gui' asP3GIdentifier.
+	instr
+		addAll:
+			{(part
+				<- (activeDocument => #addObject callWith: {'Part::Ellipsoid' . 'ellipsoid'})).
+			(part => #Radius1  <- radius1).
+			(part => #Radius2 <- radius2).
+			(part => #Radius3 <- radius3).
+			(activeDocument => #recompute) call.
+			(gui => #SendMsgToActiveView callWith: {'ViewFit'})}.
+	self evaluate: instr.
+	^ (activeDocument => (self return: part => #Name)) generate
+		asP3GIdentifier
+]
+
+{ #category : #Part }
+ClientFreeCAD >> makeLineX1: x1 Y1: y1 Z1: z1 X2: x2 Y2: y2 Z2: z2 [
+	| instr activeDocument gui part |
+	instr := P3GInstructionsList new.
+	activeDocument := 'FreeCAD.ActiveDocument' asP3GIdentifier.
+	part := 'part' asP3GIdentifier.
+	gui := 'Gui' asP3GIdentifier.
+	instr
+		addAll:
+			{(part
+				<- (activeDocument => #addObject callWith: {'Part::Line' . 'line'})).
+			(part => #X1 <- x1).
+			(part => #Y1 <- y1).
+			(part => #Z1 <- z1).
+			(part => #X2 <- x2).
+			(part => #Y2 <- y2).
+			(part => #Z2 <- z2).
+			(activeDocument => #recompute) call.
+			(gui => #SendMsgToActiveView callWith: {'ViewFit'})}.
+	self evaluate: instr.
+	^ (activeDocument => (self return: part => #Name)) generate
+		asP3GIdentifier
+]
+
+{ #category : #Part }
+ClientFreeCAD >> makePlane [
+	| instr activeDocument gui part |
+	instr := P3GInstructionsList new.
+	activeDocument := 'FreeCAD.ActiveDocument' asP3GIdentifier.
+	part := 'part' asP3GIdentifier.
+	gui := 'Gui' asP3GIdentifier.
+	instr
+		addAll:
+			{(part
+				<- (activeDocument => #addObject callWith: {'Part::Plane' . 'plane'})).
+			(activeDocument => #recompute) call.
+			(gui => #SendMsgToActiveView callWith: {'ViewFit'})}.
+	self evaluate: instr.
+	^ (activeDocument => (self return: part => #Name)) generate
+		asP3GIdentifier
+]
+
+{ #category : #Part }
+ClientFreeCAD >> makePlaneL: length W: width [
+	| instr activeDocument gui part |
+	instr := P3GInstructionsList new.
+	activeDocument := 'FreeCAD.ActiveDocument' asP3GIdentifier.
+	part := 'part' asP3GIdentifier.
+	gui := 'Gui' asP3GIdentifier.
+	instr
+		addAll:
+			{(part
+				<- (activeDocument => #addObject callWith: {'Part::Plane' . 'plane'})).
+			(part => #Length <- length).
+			(part => #Width <- width).
+			(activeDocument => #recompute) call.
+			(gui => #SendMsgToActiveView callWith: {'ViewFit'})}.
+	self evaluate: instr.
+	^ (activeDocument => (self return: part => #Name)) generate
+		asP3GIdentifier
+]
+
+{ #category : #Part }
+ClientFreeCAD >> makePoint [
+	| instr activeDocument gui part |
+	instr := P3GInstructionsList new.
+	activeDocument := 'FreeCAD.ActiveDocument' asP3GIdentifier.
+	part := 'part' asP3GIdentifier.
+	gui := 'Gui' asP3GIdentifier.
+	instr
+		addAll:
+			{(part
+				<- (activeDocument => #addObject callWith: {'Part::Vertex' . 'vertex'})).
+			(activeDocument => #recompute) call.
+			(gui => #SendMsgToActiveView callWith: {'ViewFit'})}.
+	self evaluate: instr.
+	^ (activeDocument => (self return: part => #Name)) generate
+		asP3GIdentifier
+]
+
+{ #category : #Part }
+ClientFreeCAD >> makePointX: x Y: y Z: z [
+	| instr activeDocument gui part |
+	instr := P3GInstructionsList new.
+	activeDocument := 'FreeCAD.ActiveDocument' asP3GIdentifier.
+	part := 'part' asP3GIdentifier.
+	gui := 'Gui' asP3GIdentifier.
+	instr
+		addAll:
+			{(part
+				<- (activeDocument => #addObject callWith: {'Part::Vertex' . 'vertex'})).
+			(part => #X <- x).
+			(part => #Y <- y).
+			(part => #Z <- z).
+			(activeDocument => #recompute) call.
+			(gui => #SendMsgToActiveView callWith: {'ViewFit'})}.
+	self evaluate: instr.
+	^ (activeDocument => (self return: part => #Name)) generate
+		asP3GIdentifier
+]
+
+{ #category : #Part }
+ClientFreeCAD >> makePolygon: poly Circumradius: cir [
+	| instr activeDocument gui part |
+	instr := P3GInstructionsList new.
+	activeDocument := 'FreeCAD.ActiveDocument' asP3GIdentifier.
+	part := 'part' asP3GIdentifier.
+	gui := 'Gui' asP3GIdentifier.
+	instr
+		addAll:
+			{(part
+				<- (activeDocument => #addObject callWith: {'Part::RegularPolygon' . 'polygon'})).
+			(part => #Polygon <- poly).
+			(part => #Circumradius <- cir).
+			(activeDocument => #recompute) call.
+			(gui => #SendMsgToActiveView callWith: {'ViewFit'})}.
+	self evaluate: instr.
+	^ (activeDocument => (self return: part => #Name)) generate
+		asP3GIdentifier
+]
+
+{ #category : #Part }
+ClientFreeCAD >> makePrismPolygon: poly Circumradius: cir H: height [
+	| instr activeDocument gui part |
+	instr := P3GInstructionsList new.
+	activeDocument := 'FreeCAD.ActiveDocument' asP3GIdentifier.
+	part := 'part' asP3GIdentifier.
+	gui := 'Gui' asP3GIdentifier.
+	instr
+		addAll:
+			{(part
+				<-
+					(activeDocument => #addObject callWith: {'Part::Prism' . 'prism'})).
+			(part => #Polygon <- poly).
+			(part => #Circumradius <- cir).
+			(part => #Height <- height).
+			(activeDocument => #recompute) call.
+			(gui => #SendMsgToActiveView callWith: {'ViewFit'})}.
+	self evaluate: instr.
+	^ (activeDocument => (self return: part => #Name)) generate
+		asP3GIdentifier
+]
+
+{ #category : #Part }
+ClientFreeCAD >> makeSphereR: radius [
+	| instr activeDocument gui part |
+	instr := P3GInstructionsList new.
+	activeDocument := 'FreeCAD.ActiveDocument' asP3GIdentifier.
+	part := 'part' asP3GIdentifier.
+	gui := 'Gui' asP3GIdentifier.
+	instr
+		addAll:
+			{(part
+				<- (activeDocument => #addObject callWith: {'Part::Sphere' . 'sphere'})).
+			(part => #Radius <- radius).
+			(activeDocument => #recompute) call.
+			(gui => #SendMsgToActiveView callWith: {'ViewFit'})}.
+	self evaluate: instr.
+	^ (activeDocument => (self return: part => #Name)) generate
+		asP3GIdentifier
+]
+
+{ #category : #Part }
+ClientFreeCAD >> makeTorusR1: radius1 R2: radius2 [
+	| instr activeDocument gui part |
+	instr := P3GInstructionsList new.
+	activeDocument := 'FreeCAD.ActiveDocument' asP3GIdentifier.
+	part := 'part' asP3GIdentifier.
+	gui := 'Gui' asP3GIdentifier.
+	instr
+		addAll:
+			{(part
+				<-
+					(activeDocument => #addObject
+						callWith: {'Part::Torus' . 'torus'})).
+			(part => #Radius1 <- radius1).
+			(part => #Radius2 <- radius2).
+			(activeDocument => #recompute) call.
+			(gui => #SendMsgToActiveView callWith: {'ViewFit'})}.
+	self evaluate: instr.
+	^ (activeDocument => (self return: part => #Name)) generate
+		asP3GIdentifier
 ]
 
 { #category : #opening }
